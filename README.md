@@ -28,3 +28,11 @@ As this extension does not support preview, using the dropdown is recommended:
 ```lua
 require('telescope').extensions.tmuxinator.projects(require('telescope.themes').get_dropdown({}))
 ```
+
+## Options
+
+`disable_icons`: Do not use icons to indicate active sessions
+
+## Mappings
+
+`Ctrl + x`: Stop tmuxinator project

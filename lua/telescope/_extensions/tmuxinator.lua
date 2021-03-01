@@ -118,6 +118,7 @@ local projects = function(opts)
         os.execute('tmuxinator stop ' .. selection.value)
       end)
 
+      -- no multi selection here:
       actions.toggle_selection:replace(function()
       end)
 

@@ -31,8 +31,13 @@ require('telescope').extensions.tmuxinator.projects(require('telescope.themes').
 
 ## Options
 
-`disable_icons`: Do not use icons to indicate active sessions
+| Keys            | Description                                  | Options |
+|-----------------|----------------------------------------------|---------|
+| `disable_icons` | Do not use icons to indicate active sessions | boolean |
 
 ## Mappings
 
-`Ctrl + x`: Stop tmuxinator project
+| Mappings       | Action                            |
+|----------------|-----------------------------------|
+| `<CR>`         | Start/ Switch to selected project |
+| `<C-x>`        | Stop tmuxinator project           |

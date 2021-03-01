@@ -118,6 +118,9 @@ local projects = function(opts)
         os.execute('tmuxinator stop ' .. selection.value)
       end)
 
+      actions.toggle_selection:replace(function()
+      end)
+
       return true
     end,
   }):find()

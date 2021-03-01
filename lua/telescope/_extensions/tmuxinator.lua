@@ -14,6 +14,7 @@ if not has_tmuxinator then
 end
 
 local actions = require('telescope.actions')
+local action_state = require('telescope.actions.state')
 local finders = require('telescope.finders')
 local pickers = require('telescope.pickers')
 local sorters = require('telescope.sorters')
@@ -104,17 +105,19 @@ local projects = function(opts)
       entry_maker = opts.entry_maker,
     },
     sorter = sorters.get_generic_fuzzy_sorter(),
-    attach_mappings = function(_, map)
-      map('i', '<CR>', function(prompt_bufnr)
-        local selection = actions.get_selected_entry(prompt_bufnr)
+    attach_mappings = function()
+      actions.select_default:replace(function(prompt_bufnr)
+        local selection = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
         os.execute('tmuxinator ' .. selection.value)
       end)
-      map('i', '<C-x>', function(prompt_bufnr)
-        local selection = actions.get_selected_entry(prompt_bufnr)
+
+      actions.select_horizontal:replace(function(prompt_bufnr)
+        local selection = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
         os.execute('tmuxinator stop ' .. selection.value)
       end)
+
       return true
     end,
   }):find()

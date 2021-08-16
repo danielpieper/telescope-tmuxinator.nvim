@@ -98,6 +98,18 @@ local projects = function(opts)
 
   local results = get_tmuxinator_projects();
 
+  local function tmux_current_session()
+    local output = utils.get_os_command_output({ 'tmux', 'list-sessions', '-F #{session_attached} #S' })
+
+    for _, v in ipairs(output) do
+      for item in string.gmatch(v, "1%s([^%s]+)") do
+        return item
+      end
+    end
+
+    return nil
+  end
+
   pickers.new(opts, {
     prompt_title = 'Tmuxinator Projects',
     finder = finders.new_table{
@@ -116,6 +128,16 @@ local projects = function(opts)
         local selection = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
         os.execute('tmuxinator stop ' .. selection.value)
+      end)
+
+      actions.select_vertical:replace(function(prompt_bufnr)
+        local selection = action_state.get_selected_entry()
+        local current = tmux_current_session()
+        actions.close(prompt_bufnr)
+        if current ~= nil and current ~= selection.value then
+          os.execute('tmuxinator start ' .. selection.value)
+          os.execute('tmuxinator stop ' .. current)
+        end
       end)
 
       -- no multi selection here:

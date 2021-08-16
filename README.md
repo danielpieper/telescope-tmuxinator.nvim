@@ -37,7 +37,8 @@ require('telescope').extensions.tmuxinator.projects(require('telescope.themes').
 
 ## Mappings
 
-| Mappings       | Action                            |
-|----------------|-----------------------------------|
-| `<CR>`         | Start/ Switch to selected project |
-| `<C-x>`        | Stop tmuxinator project           |
+| Mappings       | Action                                                     |
+|----------------|------------------------------------------------------------|
+| `<CR>`         | Start/ Switch to selected project                          |
+| `<C-x>`        | Stop tmuxinator project                                    |
+| `<C-v>`        | Stop current tmuxinator project and start selected project |

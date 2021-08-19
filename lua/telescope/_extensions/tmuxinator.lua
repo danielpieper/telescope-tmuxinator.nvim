@@ -20,6 +20,12 @@ local pickers = require('telescope.pickers')
 local sorters = require('telescope.sorters')
 local utils = require('telescope.utils')
 
+local state = {
+  select_action = nil,
+  stop_action = nil,
+  disable_icons = false,
+}
+
 local function get_tmuxinator_projects()
   local output = utils.get_os_command_output({ 'tmuxinator', 'list' })
   local t = {}
@@ -57,7 +63,7 @@ do
   function entry_maker_gen_from_active_sessions(opts)
     opts = opts or {}
 
-    local disable_icons = opts.disable_icons
+    local disable_icons = opts.disable_icons == nil and state.disable_icons or opts.disable_icons
 
     local sessions = tmux_session_lookup()
     local mt_file_entry = {}
@@ -91,6 +97,10 @@ do
   end
 end
 
+local function set_config_state(opt_name, value, default)
+  state[opt_name] = value == nil and default or value
+end
+
 local projects = function(opts)
   opts = opts or {}
 
@@ -120,24 +130,28 @@ local projects = function(opts)
     attach_mappings = function()
       actions.select_default:replace(function(prompt_bufnr)
         local selection = action_state.get_selected_entry()
+        local current = tmux_current_session()
         actions.close(prompt_bufnr)
         os.execute('tmuxinator ' .. selection.value)
+        if state.select_action == 'kill' and current ~= nil then
+          os.execute('tmux kill-session -t ' .. current)
+        elseif state.select_action == 'stop' and current ~= nil then
+          os.execute('tmuxinator stop ' .. current)
+        end
       end)
 
       actions.select_horizontal:replace(function(prompt_bufnr)
         local selection = action_state.get_selected_entry()
         actions.close(prompt_bufnr)
-        os.execute('tmuxinator stop ' .. selection.value)
+        if state.stop_action == 'kill' then
+          os.execute('tmux kill-session -t ' .. selection.value)
+        else
+          os.execute('tmuxinator stop ' .. selection.value)
+        end
       end)
 
-      actions.select_vertical:replace(function(prompt_bufnr)
-        local selection = action_state.get_selected_entry()
-        local current = tmux_current_session()
-        actions.close(prompt_bufnr)
-        if current ~= nil and current ~= selection.value then
-          os.execute('tmuxinator start ' .. selection.value)
-          os.execute('tmuxinator stop ' .. current)
-        end
+      -- no vertical selection here:
+      actions.select_vertical:replace(function()
       end)
 
       -- no multi selection here:
@@ -150,6 +164,11 @@ local projects = function(opts)
 end
 
 return telescope.register_extension {
+  setup = function(ext_config)
+    set_config_state("select_action", ext_config.select_action, 'switch')
+    set_config_state("stop_action", ext_config.stop_action, 'stop')
+    set_config_state("disable_icons", ext_config.disable_icons, false)
+  end,
   exports = {
     projects = projects,
   }

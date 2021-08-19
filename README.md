@@ -29,16 +29,47 @@ As this extension does not support preview, using the dropdown is recommended:
 require('telescope').extensions.tmuxinator.projects(require('telescope.themes').get_dropdown({}))
 ```
 
-## Options
-
-| Keys            | Description                                  | Options |
-|-----------------|----------------------------------------------|---------|
-| `disable_icons` | Do not use icons to indicate active sessions | boolean |
-
 ## Mappings
 
-| Mappings       | Action                                                     |
-|----------------|------------------------------------------------------------|
-| `<CR>`         | Start/ Switch to selected project                          |
-| `<C-x>`        | Stop tmuxinator project                                    |
-| `<C-v>`        | Stop current tmuxinator project and start selected project |
+| Mappings       | Action        |
+|----------------|---------------|
+| `<CR>`         | Select action |
+| `<C-x>`        | Stop action   |
+
+## Configuration
+
+See [default configuration](https://github.com/nvim-telescope/telescope.nvim#telescope-defaults) for full details on configuring Telescope.
+
+- `select_action` (default: `switch`)
+
+  One of:
+  - `switch`: Switch project
+  - `stop`: Switch project and stop the current project
+  - `kill`: Switch project and kill the current project
+  Defaults to `switch` if unset.
+
+- `stop_action` (default: `stop`)
+
+  One of:
+  - `stop`: Stop the current project
+  - `kill`: Kill the current project
+  Defaults to `stop` if unset.
+
+- `disable_icons` (default: `false`)
+
+  Do not use icons to indicate active sessions
+
+
+### Example Configuration:
+
+```lua
+telescope.setup {
+  extensions = {
+    tmuxinator = {
+      select_action = 'switch', -- | 'stop' | 'kill'
+      stop_action = 'stop', -- | 'kill'
+      disable_icons = false,
+    },
+  },
+}
+```

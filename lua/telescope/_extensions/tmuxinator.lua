@@ -1,18 +1,3 @@
-local has_telescope, telescope = pcall(require, "telescope")
-if not has_telescope then
-	error("This plugins requires nvim-telescope/telescope.nvim")
-end
-
-local has_tmux = (vim.fn.executable("tmux") == 1)
-if not has_tmux then
-	error("This plugin requires tmux.")
-end
-
-local has_tmuxinator = (vim.fn.executable("tmuxinator") == 1)
-if not has_tmuxinator then
-	error("This plugin requires tmuxinator.")
-end
-
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 local finders = require("telescope.finders")
@@ -165,11 +150,28 @@ local projects = function(opts)
 		:find()
 end
 
-return telescope.register_extension({
+return require("telescope").register_extension({
 	setup = function(ext_config)
 		set_config_state("select_action", ext_config.select_action, "switch")
 		set_config_state("stop_action", ext_config.stop_action, "stop")
 		set_config_state("disable_icons", ext_config.disable_icons, false)
+	end,
+	health = function()
+		if vim.fn.executable("tmux") == 1 then
+			vim.health.ok("tmux installed.")
+		else
+			vim.health.info("tmux is required")
+		end
+		if vim.fn.executable("tmuxinator") == 1 then
+			vim.health.ok("tmuxinator installed.")
+		else
+			vim.health.info("tmuxinator is required")
+		end
+		if vim.F.npcall(require, "nvim-web-devicons") then
+			vim.health.ok("nvim-web-devicons installed.")
+		else
+			vim.health.info("nvim-web-devicons is not installed.")
+		end
 	end,
 	exports = {
 		projects = projects,
